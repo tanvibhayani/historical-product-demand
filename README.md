@@ -5,6 +5,8 @@ This project is designed to analyze historical product demand data and predict f
 
 The project is deployed as an interactive web application, making it easy for users to explore demand insights and predictions.
 
+---
+
 🎯 Project Objectives
 
 Analyze historical demand data
@@ -15,6 +17,8 @@ Predict future product demand using ML
 
 Provide a user-friendly web interface
 
+---
+
 🚀 Live Project Links
 
 You can access the deployed applications using the links below:
@@ -24,6 +28,8 @@ You can access the deployed applications using the links below:
 
 🔹 Streamlit Cloud App
 👉 https://historical-appuct-demand-vbnw85sndybsxfxio7wn3c.streamlit.app/
+
+---
 
 🧠 Technologies & Tools Used
 
@@ -47,6 +53,8 @@ The trained model predicts future demand values.
 
 Results are displayed through an interactive Streamlit interface.
 
+---
+
 🧪 Features
 
 📊 Historical demand visualization
@@ -56,6 +64,8 @@ Results are displayed through an interactive Streamlit interface.
 🖥️ Interactive and clean UI
 
 ⚡ Fast and accurate results
+
+---
 
 💼 Use Cases
 
