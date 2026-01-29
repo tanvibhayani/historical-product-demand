@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
+import os
+
 
 # ---------------- Page Config ----------------
 st.set_page_config(
@@ -31,7 +33,8 @@ scaler = joblib.load("demand_scaler.pkl")
 # ---------------- Load Data ----------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("Historical Product Demand.csv")
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "Historical Product Demand.csv")
+    df = pd.read_csv(DATA_PATH)
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     df.dropna(subset=["Date"], inplace=True)
 
@@ -120,3 +123,4 @@ with st.expander("📄 View Sample Data"):
     st.dataframe(df.head(20), height=200)
 
 st.caption("Machine Learning Project | Demand Forecasting using Regression")
+
