@@ -19,7 +19,7 @@ Provide a user-friendly web interface
 
 ---
 
-![Dashboard Screenshot](https://raw.githubusercontent.com/tanvibhayani/Tanvi-bhayani/main/dashboard.png)
+![Dashboard Screenshot](https://github.com/tanvibhayani/historical-product-demand/blob/main/localhost_8501_%20(2).png)
 
 ---
 
