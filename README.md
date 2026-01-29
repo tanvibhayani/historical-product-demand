@@ -19,6 +19,10 @@ Provide a user-friendly web interface
 
 ---
 
+![Dashboard Screenshot](https://raw.githubusercontent.com/tanvibhayani/Tanvi-bhayani/main/dashboard.png)
+
+---
+
 🚀 Live Project Links
 
 You can access the deployed applications using the links below:
