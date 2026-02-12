@@ -7,22 +7,17 @@ import joblib
 st.set_page_config(
     page_title="Product Demand Analysis",
     page_icon="📦",
-    layout="centered"
+    layout="wide"
 )
 
-# ---------------- Custom Minimal CSS ----------------
+# ---------------- CSS ----------------
 st.markdown("""
 <style>
-.block-container {padding-top: 1rem;}
-h1 {font-size: 26px;}
-h2 {font-size: 20px;}
+h1 {font-size:32px;}
+h2 {font-size:24px;}
+.block-container {padding-top:1rem;}
 </style>
 """, unsafe_allow_html=True)
-
-# ---------------- Title ----------------
-st.title("📈 Historical Product Demand Analysis")
-st.caption("ML-based demand forecasting using historical sales data")
-st.divider()
 
 # ---------------- Load Model ----------------
 model = joblib.load("demand_model.pkl")
@@ -36,8 +31,7 @@ def load_data():
     df.dropna(subset=["Date"], inplace=True)
 
     df["Order_Demand"] = (
-        df["Order_Demand"]
-        .astype(str)
+        df["Order_Demand"].astype(str)
         .str.replace(",", "")
         .str.replace(r"\(", "-", regex=True)
         .str.replace(r"\)", "", regex=True)
@@ -55,68 +49,71 @@ def load_data():
 df = load_data()
 
 # ---------------- Sidebar ----------------
-st.sidebar.header("🔍 Filters")
-years = st.sidebar.multiselect(
-    "Select Year",
-    sorted(df["Year"].unique()),
-    default=sorted(df["Year"].unique())
+st.sidebar.header("📅 Select Year")
+selected_year = st.sidebar.selectbox(
+    "Choose Year",
+    sorted(df["Year"].unique())
 )
-df = df[df["Year"].isin(years)]
 
-# ---------------- KPI Section ----------------
-c1, c2, c3 = st.columns(3)
-c1.metric("📦 Total Orders", f"{int(df['Order_Demand'].sum()):,}")
-c2.metric("📊 Avg Daily Demand", f"{int(df.groupby('Date')['Order_Demand'].sum().mean()):,}")
-c3.metric("📅 Records", df.shape[0])
+df_year = df[df["Year"] == selected_year]
 
-st.divider()
+# ---------------- Title ----------------
+st.title("📈 Historical Product Demand Analysis")
+st.caption("Machine Learning based Demand Forecasting")
 
-# ---------------- Trend Chart ----------------
-st.subheader("📊 Demand Trend")
+# ---------------- Tabs (ONLY 2) ----------------
+tab1, tab2 = st.tabs(["📊 Year-wise Visualization", "🔮 Prediction & Data"])
 
-daily_total = df.groupby("Date")["Order_Demand"].sum()
+# ================= TAB 1 : YEAR-WISE VISUALIZATION =================
+with tab1:
+    st.subheader(f"Demand Trend for Year {selected_year}")
 
-fig, ax = plt.subplots(figsize=(9,3))
-ax.plot(daily_total.index, daily_total.values)
-ax.set_xlabel("Date")
-ax.set_ylabel("Orders")
-ax.grid(alpha=0.3)
+    yearly_trend = df_year.groupby("Date")["Order_Demand"].sum()
 
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(11,4))
+    ax.plot(yearly_trend.index, yearly_trend.values)
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Order Demand")
+    ax.grid(alpha=0.3)
 
-st.divider()
+    st.pyplot(fig, use_container_width=True)
 
-# ---------------- Prediction Section ----------------
-st.subheader("🔮 Predict Future Demand")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("📦 Total Demand", f"{int(df_year['Order_Demand'].sum()):,}")
+    c2.metric("📊 Avg Daily Demand", f"{int(yearly_trend.mean()):,}")
+    c3.metric("📅 Records", df_year.shape[0])
 
-colA, colB = st.columns([2,1])
+# ================= TAB 2 : PREDICTION + VISUALIZATION + RAW DATA =================
+with tab2:
+    st.subheader("🔮 Predict Future Product Demand")
 
-with colA:
     future_date = st.date_input("Select Future Date")
 
-with colB:
-    st.write("")   # spacing
-    st.write("")   # spacing
-    predict = st.button("Predict")
-
-if predict:
-    try:
+    if st.button("Predict Demand"):
         X = pd.DataFrame(
             [[future_date.year, future_date.month, future_date.day, future_date.weekday()]],
             columns=["Year", "Month", "Day", "Weekday"]
         )
 
         X_scaled = scaler.transform(X)
-        result = model.predict(X_scaled)
+        prediction = model.predict(X_scaled)
 
-        st.success(f"📦 Predicted Demand: **{int(result[0]):,} units**")
-        st.info("Prediction is based on historical trends. Actual demand may vary.")
+        st.success(f"📦 Predicted Demand: **{int(prediction[0]):,} units**")
 
-    except:
-        st.error("Prediction failed. Please check model files.")
+        st.divider()
 
-# ---------------- Raw Data ----------------
-with st.expander("📄 View Sample Data"):
-    st.dataframe(df.head(20), height=200)
+        st.subheader("📊 Recent Demand Trend")
+        recent = df.tail(30).groupby("Date")["Order_Demand"].sum()
 
-st.caption("Machine Learning Project | Demand Forecasting using Regression")
+        fig2, ax2 = plt.subplots(figsize=(10,3))
+        ax2.plot(recent.index, recent.values)
+        ax2.set_xlabel("Date")
+        ax2.set_ylabel("Orders")
+        ax2.grid(alpha=0.3)
+
+        st.pyplot(fig2, use_container_width=True)
+
+        st.subheader("📄 Sample Raw Data")
+        st.dataframe(df.tail(20), height=250)
+
+st.caption("ML Project | Demand Forecasting using Regression")
